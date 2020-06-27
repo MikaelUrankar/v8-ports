@@ -1,6 +1,6 @@
---- build/gn_run_binary.py.orig	2019-07-24 18:58:02 UTC
+--- build/gn_run_binary.py.orig	2020-06-26 18:07:59 UTC
 +++ build/gn_run_binary.py
-@@ -24,7 +24,7 @@ if not os.path.isabs(path):
+@@ -19,7 +19,7 @@ path = './' + sys.argv[1]
  # The rest of the arguments are passed directly to the executable.
  args = [path] + sys.argv[2:]
  

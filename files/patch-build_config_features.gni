@@ -1,7 +1,7 @@
---- build/config/features.gni.orig	2019-10-21 19:06:18 UTC
+--- build/config/features.gni.orig	2020-06-26 18:07:59 UTC
 +++ build/config/features.gni
-@@ -26,7 +26,7 @@ declare_args() {
-   proprietary_codecs = is_chrome_branded || is_chromecast
+@@ -46,7 +46,7 @@ declare_args() {
+   fieldtrial_testing_like_official_build = is_chrome_branded
  
    # libudev usage. This currently only affects the content layer.
 -  use_udev = is_linux && !is_chromecast

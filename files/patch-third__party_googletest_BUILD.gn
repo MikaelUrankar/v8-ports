@@ -1,0 +1,11 @@
+--- third_party/googletest/BUILD.gn.orig	2020-06-27 09:41:53 UTC
++++ third_party/googletest/BUILD.gn
+@@ -19,7 +19,7 @@ config("gtest_config") {
+     "GTEST_LANG_CXX11=1",
+ 
+     # Prevents gtest from including both <tr1/tuple> and <tuple>.
+-    "GTEST_HAS_TR1_TUPLE=0",
++    "GTEST_HAS_TR1_TUPLE=1",
+   ]
+ 
+   # Gtest headers need to be able to find themselves.
