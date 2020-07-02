@@ -1,13 +1,13 @@
 # $FreeBSD: head/lang/v8/Makefile 507372 2019-07-26 20:46:53Z gerald $
 
 PORTNAME=	v8
-DISTVERSION=	8.5.145
+DISTVERSION=	8.6.39
 CATEGORIES=	lang
 MASTER_SITES=	http://mikael.urankar.free.fr/FreeBSD/v8/:build \
 		http://mikael.urankar.free.fr/FreeBSD/v8/:buildtools \
 		http://mikael.urankar.free.fr/FreeBSD/v8/:clang \
 		http://mikael.urankar.free.fr/FreeBSD/v8/:common \
-		http://mikael.urankar.free.fr/FreeBSD/v8/:gmock \
+		http://mikael.urankar.free.fr/FreeBSD/v8/:googletest \
 		http://mikael.urankar.free.fr/FreeBSD/v8/:icu \
 		http://mikael.urankar.free.fr/FreeBSD/v8/:zlib
 # XXX sha256 changes everytime you download the archive
@@ -15,14 +15,14 @@ MASTER_SITES=	http://mikael.urankar.free.fr/FreeBSD/v8/:build \
 #		https://chromium.googlesource.com/chromium/src/buildtools.git/+archive/:buildtools \
 #		https://chromium.googlesource.com/chromium/src/tools/clang.git/+archive/:clang \
 #		https://chromium.googlesource.com/chromium/src/base/trace_event/common.git/+archive/:common \
-#		https://chromium.googlesource.com/external/github.com/google/googletest.git/+archive/:gmock \
+#		https://chromium.googlesource.com/external/github.com/google/googletest.git/+archive/:googletest \
 #		https://chromium.googlesource.com/chromium/deps/icu.git/+archive/:icu \
 #		https://chromium.googlesource.com/chromium/src/third_party/zlib.git/+archive/:zlib
 DISTFILES=	build-${BUILD_REV}.tar.gz:build \
 		buildtools-${BUILDTOOLS_REV}.tar.gz:buildtools \
 		clang-${CLANG_REV}.tar.gz:clang \
 		common-${COMMON_REV}.tar.gz:common \
-		gmock-${GMOCK_REV}.tar.gz:gmock \
+		googletest-${GOOGLETEST_REV}.tar.gz:googletest \
 		icu-${ICU_REV}.tar.gz:icu \
 		zlib-${ZLIB_REV}.tar.gz:zlib
 EXTRACT_ONLY=	${DISTNAME}.tar.gz
@@ -51,14 +51,17 @@ USES=		pkgconfig ninja python:2.7,build tar:xz
 USE_GITHUB=	yes
 USE_LDCONFIG=	yes
 
+# new release every minutes
+PORTSCOUT=	ignore
+
 # see ${WRKSRC}/DEPS
-BUILD_REV=	8038ef2827d0bc23ac85450a91b0a2a413944a24
-BUILDTOOLS_REV=	574cbd5df82c6ae48805b2aa8d75e0ef76aa15aa
-CLANG_REV=	5e1d63a7e37e51596de0d3c01e239ff8919b5d6e
-COMMON_REV=	ef3586804494b7e402b6c1791d5dccdf2971afff
-GMOCK_REV=	4fe018038f87675c083d0cfb6a6b57c274fb1753
-ICU_REV=	46f53dfc09c520b7c520a089ca473bb0ee29c07e
-ZLIB_REV=	a68151fd9b9f5ad11b96a3765f706361ff22dbc8
+BUILD_REV=	cee6c15d0d8d2e92de1a6c1291cb9dfe984820b5
+BUILDTOOLS_REV=	6b2a302b65baf729e0dc026bf2f0bfdb593a2366
+CLANG_REV=	b49c12a8f3fb25181855d0ea641bbcc2b2e95213
+COMMON_REV=	23ef5333a357fc7314630ef88b44c3a545881dee
+GOOGLETEST_REV=	4fe018038f87675c083d0cfb6a6b57c274fb1753
+ICU_REV=	79326efe26e5440f530963704c3c0ff965b3a4ac
+ZLIB_REV=	8603eee37c4f4dd3e033d06fa18ea34ed9b41f41
 
 BUILDTYPE=	Release
 
@@ -91,7 +94,7 @@ post-extract:
 	${TAR} -xf ${DISTDIR}/buildtools-${BUILDTOOLS_REV}.tar.gz  -C ${WRKSRC}/buildtools
 	${TAR} -xf ${DISTDIR}/clang-${CLANG_REV}.tar.gz  -C ${WRKSRC}/tools/clang
 	${TAR} -xf ${DISTDIR}/common-${COMMON_REV}.tar.gz  -C ${WRKSRC}/base/trace_event/common
-	${TAR} -xf ${DISTDIR}/gmock-${GMOCK_REV}.tar.gz  -C ${WRKSRC}/third_party/googletest/src
+	${TAR} -xf ${DISTDIR}/googletest-${GOOGLETEST_REV}.tar.gz  -C ${WRKSRC}/third_party/googletest/src
 	${TAR} -xf ${DISTDIR}/icu-${ICU_REV}.tar.gz -C ${WRKSRC}/third_party/icu
 	${TAR} -xf ${DISTDIR}/zlib-${ZLIB_REV}.tar.gz -C ${WRKSRC}/third_party/zlib
 
