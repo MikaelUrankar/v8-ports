@@ -3,21 +3,13 @@
 PORTNAME=	v8
 DISTVERSION=	8.6.39
 CATEGORIES=	lang
-MASTER_SITES=	http://mikael.urankar.free.fr/FreeBSD/v8/:build \
-		http://mikael.urankar.free.fr/FreeBSD/v8/:buildtools \
-		http://mikael.urankar.free.fr/FreeBSD/v8/:clang \
-		http://mikael.urankar.free.fr/FreeBSD/v8/:common \
-		http://mikael.urankar.free.fr/FreeBSD/v8/:googletest \
-		http://mikael.urankar.free.fr/FreeBSD/v8/:icu \
-		http://mikael.urankar.free.fr/FreeBSD/v8/:zlib
-# XXX sha256 changes everytime you download the archive
-#MASTER_SITES=	https://chromium.googlesource.com/chromium/src/build.git/+archive/:build \
-#		https://chromium.googlesource.com/chromium/src/buildtools.git/+archive/:buildtools \
-#		https://chromium.googlesource.com/chromium/src/tools/clang.git/+archive/:clang \
-#		https://chromium.googlesource.com/chromium/src/base/trace_event/common.git/+archive/:common \
-#		https://chromium.googlesource.com/external/github.com/google/googletest.git/+archive/:googletest \
-#		https://chromium.googlesource.com/chromium/deps/icu.git/+archive/:icu \
-#		https://chromium.googlesource.com/chromium/src/third_party/zlib.git/+archive/:zlib
+MASTER_SITES=	LOCAL/mikael/v8/:build \
+		LOCAL/mikael/v8/:buildtools \
+		LOCAL/mikael/v8/:clang \
+		LOCAL/mikael/v8/:common \
+		LOCAL/mikael/v8/:googletest \
+		LOCAL/mikael/v8/:icu \
+		LOCAL/mikael/v8/:zlib
 DISTFILES=	build-${BUILD_REV}.tar.gz:build \
 		buildtools-${BUILDTOOLS_REV}.tar.gz:buildtools \
 		clang-${CLANG_REV}.tar.gz:clang \
@@ -80,6 +72,38 @@ GN_ARGS+=	clang_use_chrome_plugins=false \
 		extra_ldflags="${LDFLAGS}"
 
 MAKE_ARGS=	-C out/${BUILDTYPE}
+
+#
+# sha256 changes everytime you download the archive, need to host them on
+# freefall
+# To download distfiles : as sunpoet: make MAINTAINER_MODE=yes fetch
+#
+.if defined(MAINTAINER_MODE)
+do-fetch:
+	${FETCH_CMD} -o ${DISTDIR}/build-${BUILD_REV}.tar.gz \
+		https://chromium.googlesource.com/chromium/src/build.git/+archive/${BUILD_REV}.tar.gz
+	${FETCH_CMD} -o ${DISTDIR}/buildtools-${BUILDTOOLS_REV}.tar.gz \
+		https://chromium.googlesource.com/chromium/src/buildtools.git/+archive/${BUILDTOOLS_REV}.tar.gz
+	${FETCH_CMD} -o ${DISTDIR}/clang-${CLANG_REV}.tar.gz \
+		https://chromium.googlesource.com/chromium/src/tools/clang.git/+archive/${CLANG_REV}.tar.gz
+	${FETCH_CMD} -o ${DISTDIR}/common-${COMMON_REV}.tar.gz \
+		https://chromium.googlesource.com/chromium/src/base/trace_event/common.git/+archive/${COMMON_REV}.tar.gz
+	${FETCH_CMD} -o ${DISTDIR}/googletest-${GOOGLETEST_REV}.tar.gz \
+		https://chromium.googlesource.com/external/github.com/google/googletest.git/+archive/${GOOGLETEST_REV}.tar.gz
+	${FETCH_CMD} -o ${DISTDIR}/icu-${ICU_REV}.tar.gz \
+		https://chromium.googlesource.com/chromium/deps/icu.git/+archive/${ICU_REV}.tar.gz
+	${FETCH_CMD} -o ${DISTDIR}/zlib-${ZLIB_REV}.tar.gz \
+		https://chromium.googlesource.com/chromium/src/third_party/zlib.git/+archive/${ZLIB_REV}.tar.gz
+. if ${USER} == ${MAINTAINER:C/@.*//}
+.  for f in build-${BUILD_REV}.tar.gz buildtools-${BUILDTOOLS_REV}.tar.gz \
+		clang-${CLANG_REV}.tar.gz common-${COMMON_REV}.tar.gz \
+		googletest-${GOOGLETEST_REV}.tar.gz icu-${ICU_REV}.tar.gz \
+		zlib-${ZLIB_REV}.tar.gz
+	scp ${DISTDIR}/${f} \
+	    freefall.freebsd.org:public_distfiles/v8
+.  endfor
+. endif
+.endif # defined(MAINTAINER_MODE)
 
 post-extract:
 	${MKDIR} \

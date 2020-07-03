@@ -6,6 +6,7 @@ include/cppgc/garbage-collected.h
 include/cppgc/heap.h
 include/cppgc/internal/api-constants.h
 include/cppgc/internal/atomic-entry-flag.h
+include/cppgc/internal/caged-heap-local-data.h
 include/cppgc/internal/compiler-specific.h
 include/cppgc/internal/finalizer-trait.h
 include/cppgc/internal/gc-info.h
