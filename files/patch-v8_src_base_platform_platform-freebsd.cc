@@ -1,5 +1,13 @@
 --- src/base/platform/platform-freebsd.cc.orig	2020-05-13 18:41:59 UTC
 +++ src/base/platform/platform-freebsd.cc
+@@ -6,6 +6,7 @@
+ // parts, the implementation is in platform-posix.cc.
+ 
+ #include <pthread.h>
++#include <pthread_np.h>
+ #include <semaphore.h>
+ #include <signal.h>
+ #include <stdlib.h>
 @@ -81,8 +82,8 @@ std::vector<OS::SharedLibraryAddress> OS::GetSharedLib
              lib_name = std::string(path);
            }

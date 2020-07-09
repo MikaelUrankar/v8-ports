@@ -1,7 +1,7 @@
 # $FreeBSD: head/lang/v8/Makefile 507372 2019-07-26 20:46:53Z gerald $
 
 PORTNAME=	v8
-DISTVERSION=	8.6.39
+DISTVERSION=	8.3.110.13
 CATEGORIES=	lang
 MASTER_SITES=	LOCAL/mikael/v8/:build \
 		LOCAL/mikael/v8/:buildtools \
@@ -47,13 +47,13 @@ USE_LDCONFIG=	yes
 PORTSCOUT=	ignore
 
 # see ${WRKSRC}/DEPS
-BUILD_REV=	cee6c15d0d8d2e92de1a6c1291cb9dfe984820b5
-BUILDTOOLS_REV=	6b2a302b65baf729e0dc026bf2f0bfdb593a2366
-CLANG_REV=	b49c12a8f3fb25181855d0ea641bbcc2b2e95213
-COMMON_REV=	23ef5333a357fc7314630ef88b44c3a545881dee
-GOOGLETEST_REV=	4fe018038f87675c083d0cfb6a6b57c274fb1753
-ICU_REV=	79326efe26e5440f530963704c3c0ff965b3a4ac
-ZLIB_REV=	8603eee37c4f4dd3e033d06fa18ea34ed9b41f41
+BUILD_REV=	26e9d485d01d6e0eb9dadd21df767a63494c8fea
+BUILDTOOLS_REV=		7977eb176752aeec29d888cfe8e677ac12ed1c41
+CLANG_REV=	105a8460911176861a422738eee4daad8dfe88a2
+COMMON_REV=	dab187b372fc17e51f5b9fad8201813d0aed5129
+GOOGLETEST_REV=	10b1902d893ea8cc43c69541d70868f91af3646b
+ICU_REV=	d7aff76cf6bb0fbef3afa6c07718f78a80a70f8f
+ZLIB_REV=	156be8c52f80cde343088b4a69a80579101b6e67
 
 BUILDTYPE=	Release
 
@@ -100,7 +100,7 @@ do-fetch:
 		googletest-${GOOGLETEST_REV}.tar.gz icu-${ICU_REV}.tar.gz \
 		zlib-${ZLIB_REV}.tar.gz
 	scp ${DISTDIR}/${f} \
-	    freefall.freebsd.org:public_distfiles/v8
+	    mikael@freefall.freebsd.org:public_distfiles/v8
 .  endfor
 . endif
 .endif # defined(MAINTAINER_MODE)
