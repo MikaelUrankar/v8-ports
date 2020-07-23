@@ -38,7 +38,6 @@ LICENSE_FILE=	${WRKSRC}/LICENSE
 # clang10+ is required, hardcoded in files/patch-build_toolchain_gcc__toolchain.gni
 BUILD_DEPENDS=	binutils>0:devel/binutils \
 		gn:devel/chromium-gn \
-		glib>0:devel/glib20 \
 		${PYTHON_PKGNAMEPREFIX}Jinja2>0:devel/py-Jinja2@${PY_FLAVOR} \
 		llvm10>0:devel/llvm10
 LIB_DEPENDS=	libicuuc.so:devel/icu
@@ -48,6 +47,7 @@ ONLY_FOR_ARCHS=	aarch64 amd64 i386
 USES=		pkgconfig ninja python:2.7,build
 USE_GITHUB=	yes
 USE_LDCONFIG=	yes
+USE_GNOME=	glib20
 
 BUILDTYPE=	Release
 BINARY_ALIAS=	python=${PYTHON_CMD}
