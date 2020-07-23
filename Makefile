@@ -27,8 +27,7 @@ LICENSE_FILE=	${WRKSRC}/LICENSE
 
 BUILD_DEPENDS=	binutils>0:devel/binutils \
 		gn:devel/chromium-gn \
-		glib>0:devel/glib20 \
-		${PYTHON_PKGNAMEPREFIX}Jinja2>0:devel/py-Jinja2@${PY_FLAVOR} \
+		${PYTHON_PKGNAMEPREFIX}Jinja2>0:devel/py-Jinja2@${PY_FLAVOR}
 
 .include <bsd.port.options.mk>
 
@@ -42,6 +41,7 @@ BUILD_DEPENDS+=	llvm10>0:devel/llvm10
 USES=		pkgconfig ninja python:2.7,build tar:xz
 USE_GITHUB=	yes
 USE_LDCONFIG=	yes
+USE_GNOME=	glib20
 
 # new release every minutes
 PORTSCOUT=	ignore
