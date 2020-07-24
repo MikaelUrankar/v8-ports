@@ -100,7 +100,7 @@ do-fetch:
 		googletest-${GOOGLETEST_REV}.tar.gz icu-${ICU_REV}.tar.gz \
 		zlib-${ZLIB_REV}.tar.gz
 	scp ${DISTDIR}/${f} \
-	    mikael@freefall.freebsd.org:public_distfiles/v8
+	    freefall.freebsd.org:public_distfiles/v8
 .  endfor
 . endif
 .endif # defined(MAINTAINER_MODE)
