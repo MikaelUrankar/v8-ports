@@ -36,7 +36,7 @@ BUILD_DEPENDS=	binutils>0:devel/binutils \
 
 .include <bsd.port.options.mk>
 
-# clang10+ is required, this conditionnal can be dropped when
+# clang10+ is required, this conditional can be dropped when
 # 11.3 and 12.1 are EOL
 .if (${OSVERSION} >= 1100000 && ${OSVERSION} < 1103511) || \
     (${OSVERSION} >= 1200000 && ${OSVERSION} < 1201515)
@@ -112,7 +112,7 @@ do-fetch:
 		googletest-${GOOGLETEST_REV}.tar.gz icu-${ICU_REV}.tar.gz \
 		zlib-${ZLIB_REV}.tar.gz
 	scp ${DISTDIR}/${f} \
-	    mikael@freefall.freebsd.org:public_distfiles/v8
+	    freefall.freebsd.org:public_distfiles/v8
 .  endfor
 . endif
 .endif # defined(MAINTAINER_MODE)
