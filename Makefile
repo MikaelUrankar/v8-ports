@@ -12,7 +12,6 @@ MASTER_SITES=	LOCAL/mikael/v8/:build \
 		LOCAL/mikael/v8/:zlib \
 		LOCAL/mikael/v8/:libcxx \
 		LOCAL/mikael/v8/:libcxxabi \
-		LOCAL/mikael/v8/:libunwind
 DISTFILES=	build-${BUILD_REV}.tar.gz:build \
 		buildtools-${BUILDTOOLS_REV}.tar.gz:buildtools \
 		clang-${CLANG_REV}.tar.gz:clang \
@@ -22,7 +21,6 @@ DISTFILES=	build-${BUILD_REV}.tar.gz:build \
 		zlib-${ZLIB_REV}.tar.gz:zlib \
 		libcxx-${LIBCXX_REV}.tar.gz:libcxx \
 		libcxxabi-${LIBCXXABI_REV}.tar.gz:libcxxabi \
-		libunwind-${LIBUNWIND_REV}.tar.gz:libunwind
 EXTRACT_ONLY=	${DISTNAME}.tar.gz
 
 MAINTAINER=	sunpoet@FreeBSD.org
@@ -63,7 +61,6 @@ ICU_REV=	d7aff76cf6bb0fbef3afa6c07718f78a80a70f8f
 ZLIB_REV=	156be8c52f80cde343088b4a69a80579101b6e67
 LIBCXX_REV=	d9040c75cfea5928c804ab7c235fed06a63f743a
 LIBCXXABI_REV=	196ba1aaa8ac285d94f4ea8d9836390a45360533
-LIBUNWIND_REV=	43bb9f872232f531bac80093ceb4de61c64b9ab7
 
 BUILDTYPE=	Release
 
@@ -140,7 +137,6 @@ post-extract:
 	${TAR} -xf ${DISTDIR}/zlib-${ZLIB_REV}.tar.gz -C ${WRKSRC}/third_party/zlib
 	${TAR} -xf ${DISTDIR}/libcxx-${LIBCXX_REV}.tar.gz -C ${WRKSRC}/buildtools/third_party/libc++/trunk
 	${TAR} -xf ${DISTDIR}/libcxxabi-${LIBCXXABI_REV}.tar.gz -C ${WRKSRC}/buildtools/third_party/libc++abi/trunk
-	${TAR} -xf ${DISTDIR}/libunwind-${LIBUNWIND_REV}.tar.gz -C ${WRKSRC}/buildtools/third_party/libunwind
 
 post-patch:
 	${REINPLACE_CMD} "s|%%LOCALBASE%%|${LOCALBASE}|" \
