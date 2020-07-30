@@ -1,7 +1,14 @@
 # $FreeBSD: head/lang/v8/Makefile 507372 2019-07-26 20:46:53Z gerald $
 
+# https://chromereleases.googleblog.com/search/label/Desktop%20Update
+# search for "The stable channel has been updated to" XX.X.XXXX.XXX
+#  -> https://github.com/chromium/chromium/blob/84.0.4147.125/DEPS
+#     -> 'v8_revision': '451d38b60be0a0f692b11815289cf8cbc9b1dc98'
+# https://github.com/v8/v8/commit/451d38b60be0a0f692b11815289cf8cbc9b1dc98
+#  -> Version  8.4.371.23
+
 PORTNAME=	v8
-DISTVERSION=	8.3.110.13
+DISTVERSION=	8.4.371.23
 CATEGORIES=	lang
 MASTER_SITES=	LOCAL/mikael/v8/:build \
 		LOCAL/mikael/v8/:buildtools \
@@ -11,7 +18,7 @@ MASTER_SITES=	LOCAL/mikael/v8/:build \
 		LOCAL/mikael/v8/:icu \
 		LOCAL/mikael/v8/:zlib \
 		LOCAL/mikael/v8/:libcxx \
-		LOCAL/mikael/v8/:libcxxabi \
+		LOCAL/mikael/v8/:libcxxabi
 DISTFILES=	build-${BUILD_REV}.tar.gz:build \
 		buildtools-${BUILDTOOLS_REV}.tar.gz:buildtools \
 		clang-${CLANG_REV}.tar.gz:clang \
@@ -20,7 +27,7 @@ DISTFILES=	build-${BUILD_REV}.tar.gz:build \
 		icu-${ICU_REV}.tar.gz:icu \
 		zlib-${ZLIB_REV}.tar.gz:zlib \
 		libcxx-${LIBCXX_REV}.tar.gz:libcxx \
-		libcxxabi-${LIBCXXABI_REV}.tar.gz:libcxxabi \
+		libcxxabi-${LIBCXXABI_REV}.tar.gz:libcxxabi
 EXTRACT_ONLY=	${DISTNAME}.tar.gz
 
 MAINTAINER=	sunpoet@FreeBSD.org
@@ -51,14 +58,14 @@ USE_GNOME=	glib20
 # new release every minutes
 PORTSCOUT=	ignore
 
-# see ${WRKSRC}/DEPS
-BUILD_REV=	26e9d485d01d6e0eb9dadd21df767a63494c8fea
-BUILDTOOLS_REV=		7977eb176752aeec29d888cfe8e677ac12ed1c41
-CLANG_REV=	105a8460911176861a422738eee4daad8dfe88a2
+# egrep "build.git|buildtools.git|clang.git|common.git|googletest.git|icu.git|zlib.git|libcxx.git|libcxxabi.git" ${WRKSRC}/DEPS
+BUILD_REV=	1b904cc30093c25d5fd48389bd58e3f7409bcf80
+BUILDTOOLS_REV=		204a35a2a64f7179f8b76d7a0385653690839e21
+CLANG_REV=	de3e20662b84f0ee361a5ae11c99a9513df7c8e8
 COMMON_REV=	dab187b372fc17e51f5b9fad8201813d0aed5129
-GOOGLETEST_REV=	10b1902d893ea8cc43c69541d70868f91af3646b
-ICU_REV=	d7aff76cf6bb0fbef3afa6c07718f78a80a70f8f
-ZLIB_REV=	156be8c52f80cde343088b4a69a80579101b6e67
+GOOGLETEST_REV=	a09ea700d32bab83325aff9ff34d0582e50e3997
+ICU_REV=	f2223961702f00a8833874b0560d615a2cc42738
+ZLIB_REV=	90fc47e6eed7bd1a59ad1603761303ef24705593
 LIBCXX_REV=	d9040c75cfea5928c804ab7c235fed06a63f743a
 LIBCXXABI_REV=	196ba1aaa8ac285d94f4ea8d9836390a45360533
 
@@ -80,11 +87,9 @@ GN_ARGS+=	clang_use_chrome_plugins=false \
 
 MAKE_ARGS=	-C out/${BUILDTYPE}
 
-#
 # sha256 changes everytime you download the archive, need to host them on
 # freefall
 # To download distfiles : as sunpoet: make MAINTAINER_MODE=yes fetch
-#
 .if defined(MAINTAINER_MODE)
 do-fetch:
 	${FETCH_CMD} -o ${DISTDIR}/build-${BUILD_REV}.tar.gz \
