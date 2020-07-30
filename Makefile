@@ -9,14 +9,20 @@ MASTER_SITES=	LOCAL/mikael/v8/:build \
 		LOCAL/mikael/v8/:common \
 		LOCAL/mikael/v8/:googletest \
 		LOCAL/mikael/v8/:icu \
-		LOCAL/mikael/v8/:zlib
+		LOCAL/mikael/v8/:zlib \
+		LOCAL/mikael/v8/:libcxx \
+		LOCAL/mikael/v8/:libcxxabi \
+		LOCAL/mikael/v8/:libunwind
 DISTFILES=	build-${BUILD_REV}.tar.gz:build \
 		buildtools-${BUILDTOOLS_REV}.tar.gz:buildtools \
 		clang-${CLANG_REV}.tar.gz:clang \
 		common-${COMMON_REV}.tar.gz:common \
 		googletest-${GOOGLETEST_REV}.tar.gz:googletest \
 		icu-${ICU_REV}.tar.gz:icu \
-		zlib-${ZLIB_REV}.tar.gz:zlib
+		zlib-${ZLIB_REV}.tar.gz:zlib \
+		libcxx-${LIBCXX_REV}.tar.gz:libcxx \
+		libcxxabi-${LIBCXXABI_REV}.tar.gz:libcxxabi \
+		libunwind-${LIBUNWIND_REV}.tar.gz:libunwind
 EXTRACT_ONLY=	${DISTNAME}.tar.gz
 
 MAINTAINER=	sunpoet@FreeBSD.org
@@ -27,7 +33,8 @@ LICENSE_FILE=	${WRKSRC}/LICENSE
 
 BUILD_DEPENDS=	binutils>0:devel/binutils \
 		gn:devel/chromium-gn \
-		${PYTHON_PKGNAMEPREFIX}Jinja2>0:devel/py-Jinja2@${PY_FLAVOR}
+		${PYTHON_PKGNAMEPREFIX}Jinja2>0:devel/py-Jinja2@${PY_FLAVOR} \
+		libunwind>0:devel/libunwind
 
 .include <bsd.port.options.mk>
 
@@ -54,6 +61,9 @@ COMMON_REV=	dab187b372fc17e51f5b9fad8201813d0aed5129
 GOOGLETEST_REV=	10b1902d893ea8cc43c69541d70868f91af3646b
 ICU_REV=	d7aff76cf6bb0fbef3afa6c07718f78a80a70f8f
 ZLIB_REV=	156be8c52f80cde343088b4a69a80579101b6e67
+LIBCXX_REV=	d9040c75cfea5928c804ab7c235fed06a63f743a
+LIBCXXABI_REV=	196ba1aaa8ac285d94f4ea8d9836390a45360533
+LIBUNWIND_REV=	43bb9f872232f531bac80093ceb4de61c64b9ab7
 
 BUILDTYPE=	Release
 
@@ -94,6 +104,11 @@ do-fetch:
 		https://chromium.googlesource.com/chromium/deps/icu.git/+archive/${ICU_REV}.tar.gz
 	${FETCH_CMD} -o ${DISTDIR}/zlib-${ZLIB_REV}.tar.gz \
 		https://chromium.googlesource.com/chromium/src/third_party/zlib.git/+archive/${ZLIB_REV}.tar.gz
+	${FETCH_CMD} -o ${DISTDIR}/libcxx-${LIBCXX_REV}.tar.gz \
+		 https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxx.git/+archive/${LIBCXX_REV}.tar.gz
+	${FETCH_CMD} -o ${DISTDIR}/libcxxabi-${LIBCXXABI_REV}.tar.gz \
+		 https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxxabi.git/+archive/${LIBCXXABI_REV}.tar.gz
+
 . if ${USER} == ${MAINTAINER:C/@.*//}
 .  for f in build-${BUILD_REV}.tar.gz buildtools-${BUILDTOOLS_REV}.tar.gz \
 		clang-${CLANG_REV}.tar.gz common-${COMMON_REV}.tar.gz \
@@ -113,7 +128,9 @@ post-extract:
 		${WRKSRC}/third_party/googletest/src \
 		${WRKSRC}/third_party/icu \
 		${WRKSRC}/third_party/zlib \
-		${WRKSRC}/tools/clang
+		${WRKSRC}/tools/clang \
+		${WRKSRC}/buildtools/third_party/libc++/trunk \
+		${WRKSRC}/buildtools/third_party/libc++abi/trunk
 	${TAR} -xf ${DISTDIR}/build-${BUILD_REV}.tar.gz  -C ${WRKSRC}/build
 	${TAR} -xf ${DISTDIR}/buildtools-${BUILDTOOLS_REV}.tar.gz  -C ${WRKSRC}/buildtools
 	${TAR} -xf ${DISTDIR}/clang-${CLANG_REV}.tar.gz  -C ${WRKSRC}/tools/clang
@@ -121,10 +138,14 @@ post-extract:
 	${TAR} -xf ${DISTDIR}/googletest-${GOOGLETEST_REV}.tar.gz  -C ${WRKSRC}/third_party/googletest/src
 	${TAR} -xf ${DISTDIR}/icu-${ICU_REV}.tar.gz -C ${WRKSRC}/third_party/icu
 	${TAR} -xf ${DISTDIR}/zlib-${ZLIB_REV}.tar.gz -C ${WRKSRC}/third_party/zlib
+	${TAR} -xf ${DISTDIR}/libcxx-${LIBCXX_REV}.tar.gz -C ${WRKSRC}/buildtools/third_party/libc++/trunk
+	${TAR} -xf ${DISTDIR}/libcxxabi-${LIBCXXABI_REV}.tar.gz -C ${WRKSRC}/buildtools/third_party/libc++abi/trunk
+	${TAR} -xf ${DISTDIR}/libunwind-${LIBUNWIND_REV}.tar.gz -C ${WRKSRC}/buildtools/third_party/libunwind
 
 post-patch:
 	${REINPLACE_CMD} "s|%%LOCALBASE%%|${LOCALBASE}|" \
-		${WRKSRC}/build/toolchain/gcc_toolchain.gni
+		${WRKSRC}/build/toolchain/gcc_toolchain.gni \
+		${WRKSRC}/buildtools/third_party/libc++/BUILD.gn
 # clang10+ is required, this conditionnal can be dropped when
 # 11.3 and 12.1 are EOL
 .if (${OSVERSION} >= 1100000 && ${OSVERSION} < 1103511) || \
@@ -133,14 +154,7 @@ post-patch:
 .endif
 
 do-configure:
-	@${ECHO_CMD} 'is_clang=true' > ${WRKSRC}/build/args/release.gn
-	@${ECHO_CMD} 'treat_warnings_as_errors=false' >> ${WRKSRC}/build/args/release.gn
-	@${ECHO_CMD} 'use_custom_libcxx=false' >> ${WRKSRC}/build/args/release.gn
-	@${ECHO_CMD} 'use_lld=true' >> ${WRKSRC}/build/args/release.gn
-	@${ECHO_CMD} 'extra_cxxflags="-I${PREFIX}/include"' >> ${WRKSRC}/build/args/release.gn
-	@${ECHO_CMD} 'extra_ldflags="-L${PREFIX}/lib"' >> ${WRKSRC}/build/args/release.gn
-	cd ${WRKSRC} && ${SETENV} ${CONFIGURE_ENV} gn gen out/${BUILDTYPE} \
-		--args='import("//build/args/release.gn") ${GN_ARGS}'
+	cd ${WRKSRC} && ${SETENV} ${CONFIGURE_ENV} gn gen out/${BUILDTYPE} --args='${GN_ARGS}'
 
 do-install:
 	${INSTALL_PROGRAM} ${WRKSRC}/out/${BUILDTYPE}/d8 ${STAGEDIR}${PREFIX}/bin/d8
