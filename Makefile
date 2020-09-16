@@ -2,13 +2,13 @@
 
 # https://chromereleases.googleblog.com/search/label/Desktop%20Update
 # search for "The stable channel has been updated to" XX.X.XXXX.XXX
-#  -> https://github.com/chromium/chromium/blob/84.0.4147.125/DEPS
-#     -> 'v8_revision': '451d38b60be0a0f692b11815289cf8cbc9b1dc98'
-# https://github.com/v8/v8/commit/451d38b60be0a0f692b11815289cf8cbc9b1dc98
+#  -> https://github.com/chromium/chromium/blob/85.0.4183.102/DEPS
+#     -> 'v8_revision': '4dc61d3cd02f0a2462cc655095db1e99ad9047d2'
+# https://github.com/v8/v8/commit/4dc61d3cd02f0a2462cc655095db1e99ad9047d2
 #  -> Version  8.4.371.23
 
 PORTNAME=	v8
-DISTVERSION=	8.4.371.23
+DISTVERSION=	8.5.210.20
 CATEGORIES=	lang
 MASTER_SITES=	LOCAL/mikael/v8/:build \
 		LOCAL/mikael/v8/:buildtools \
@@ -25,9 +25,9 @@ DISTFILES=	build-${BUILD_REV}.tar.gz:build \
 		common-${COMMON_REV}.tar.gz:common \
 		googletest-${GOOGLETEST_REV}.tar.gz:googletest \
 		icu-${ICU_REV}.tar.gz:icu \
-		zlib-${ZLIB_REV}.tar.gz:zlib \
 		libcxx-${LIBCXX_REV}.tar.gz:libcxx \
-		libcxxabi-${LIBCXXABI_REV}.tar.gz:libcxxabi
+		libcxxabi-${LIBCXXABI_REV}.tar.gz:libcxxabi \
+		zlib-${ZLIB_REV}.tar.gz:zlib
 EXTRACT_ONLY=	${DISTNAME}.tar.gz
 
 MAINTAINER=	sunpoet@FreeBSD.org
@@ -59,15 +59,15 @@ USE_GNOME=	glib20
 PORTSCOUT=	ignore
 
 # egrep "build.git|buildtools.git|clang.git|common.git|googletest.git|icu.git|zlib.git|libcxx.git|libcxxabi.git" ${WRKSRC}/DEPS
-BUILD_REV=	1b904cc30093c25d5fd48389bd58e3f7409bcf80
-BUILDTOOLS_REV=		204a35a2a64f7179f8b76d7a0385653690839e21
-CLANG_REV=	de3e20662b84f0ee361a5ae11c99a9513df7c8e8
-COMMON_REV=	dab187b372fc17e51f5b9fad8201813d0aed5129
-GOOGLETEST_REV=	a09ea700d32bab83325aff9ff34d0582e50e3997
-ICU_REV=	f2223961702f00a8833874b0560d615a2cc42738
-ZLIB_REV=	90fc47e6eed7bd1a59ad1603761303ef24705593
+BUILD_REV=	2dc7c7abc04253e340b60fa339151a92519f93d1
+BUILDTOOLS_REV=		1ed99573d57d4b6041261b531cdf876e631cf0bc
+CLANG_REV=	42b285fe752983290c9c74bafa83b50e3ba09c01
+COMMON_REV=	ef3586804494b7e402b6c1791d5dccdf2971afff
+GOOGLETEST_REV=	4fe018038f87675c083d0cfb6a6b57c274fb1753
+ICU_REV=	79326efe26e5440f530963704c3c0ff965b3a4ac
 LIBCXX_REV=	d9040c75cfea5928c804ab7c235fed06a63f743a
 LIBCXXABI_REV=	196ba1aaa8ac285d94f4ea8d9836390a45360533
+ZLIB_REV=	02daed1bb93a34cf89d68913f88708228e12a0ab
 
 BUILDTYPE=	Release
 
@@ -104,20 +104,21 @@ do-fetch:
 		https://chromium.googlesource.com/external/github.com/google/googletest.git/+archive/${GOOGLETEST_REV}.tar.gz
 	${FETCH_CMD} -o ${DISTDIR}/icu-${ICU_REV}.tar.gz \
 		https://chromium.googlesource.com/chromium/deps/icu.git/+archive/${ICU_REV}.tar.gz
-	${FETCH_CMD} -o ${DISTDIR}/zlib-${ZLIB_REV}.tar.gz \
-		https://chromium.googlesource.com/chromium/src/third_party/zlib.git/+archive/${ZLIB_REV}.tar.gz
 	${FETCH_CMD} -o ${DISTDIR}/libcxx-${LIBCXX_REV}.tar.gz \
 		 https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxx.git/+archive/${LIBCXX_REV}.tar.gz
 	${FETCH_CMD} -o ${DISTDIR}/libcxxabi-${LIBCXXABI_REV}.tar.gz \
 		 https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxxabi.git/+archive/${LIBCXXABI_REV}.tar.gz
+	${FETCH_CMD} -o ${DISTDIR}/zlib-${ZLIB_REV}.tar.gz \
+		https://chromium.googlesource.com/chromium/src/third_party/zlib.git/+archive/${ZLIB_REV}.tar.gz
 
 . if ${USER} == ${MAINTAINER:C/@.*//}
-.  for f in build-${BUILD_REV}.tar.gz buildtools-${BUILDTOOLS_REV}.tar.gz \
-		clang-${CLANG_REV}.tar.gz common-${COMMON_REV}.tar.gz \
-		googletest-${GOOGLETEST_REV}.tar.gz icu-${ICU_REV}.tar.gz \
-		zlib-${ZLIB_REV}.tar.gz
-	scp ${DISTDIR}/${f} \
-	    freefall.freebsd.org:public_distfiles/v8
+.  for f in build-${BUILD_REV} buildtools-${BUILDTOOLS_REV} \
+		clang-${CLANG_REV} common-${COMMON_REV} \
+		googletest-${GOOGLETEST_REV} icu-${ICU_REV} \
+		libcxx-${LIBCXX_REV} libcxxabi-${LIBCXXABI_REV} \
+		zlib-${ZLIB_REV}
+	scp ${DISTDIR}/${f}.tar.gz \
+	    mikael@freefall.freebsd.org:public_distfiles/v8
 .  endfor
 . endif
 .endif # defined(MAINTAINER_MODE)
@@ -139,9 +140,9 @@ post-extract:
 	${TAR} -xf ${DISTDIR}/common-${COMMON_REV}.tar.gz  -C ${WRKSRC}/base/trace_event/common
 	${TAR} -xf ${DISTDIR}/googletest-${GOOGLETEST_REV}.tar.gz  -C ${WRKSRC}/third_party/googletest/src
 	${TAR} -xf ${DISTDIR}/icu-${ICU_REV}.tar.gz -C ${WRKSRC}/third_party/icu
-	${TAR} -xf ${DISTDIR}/zlib-${ZLIB_REV}.tar.gz -C ${WRKSRC}/third_party/zlib
 	${TAR} -xf ${DISTDIR}/libcxx-${LIBCXX_REV}.tar.gz -C ${WRKSRC}/buildtools/third_party/libc++/trunk
 	${TAR} -xf ${DISTDIR}/libcxxabi-${LIBCXXABI_REV}.tar.gz -C ${WRKSRC}/buildtools/third_party/libc++abi/trunk
+	${TAR} -xf ${DISTDIR}/zlib-${ZLIB_REV}.tar.gz -C ${WRKSRC}/third_party/zlib
 
 post-patch:
 	${REINPLACE_CMD} "s|%%LOCALBASE%%|${LOCALBASE}|" \
