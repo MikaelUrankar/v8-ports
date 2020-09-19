@@ -37,7 +37,7 @@ LICENSE=	BSD3CLAUSE
 LICENSE_FILE=	${WRKSRC}/LICENSE
 
 BUILD_DEPENDS=	binutils>0:devel/binutils \
-		gn:devel/chromium-gn \
+		gn:devel/gn \
 		${PYTHON_PKGNAMEPREFIX}Jinja2>0:devel/py-Jinja2@${PY_FLAVOR} \
 		libunwind>0:devel/libunwind
 
