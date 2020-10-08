@@ -18,17 +18,13 @@ MASTER_SITES=	LOCAL/mikael/v8/:build \
 		LOCAL/mikael/v8/:common \
 		LOCAL/mikael/v8/:googletest \
 		LOCAL/mikael/v8/:icu \
-		LOCAL/mikael/v8/:zlib \
-		LOCAL/mikael/v8/:libcxx \
-		LOCAL/mikael/v8/:libcxxabi
+		LOCAL/mikael/v8/:zlib
 DISTFILES=	build-${BUILD_REV}.tar.gz:build \
 		buildtools-${BUILDTOOLS_REV}.tar.gz:buildtools \
 		clang-${CLANG_REV}.tar.gz:clang \
 		common-${COMMON_REV}.tar.gz:common \
 		googletest-${GOOGLETEST_REV}.tar.gz:googletest \
 		icu-${ICU_REV}.tar.gz:icu \
-		libcxx-${LIBCXX_REV}.tar.gz:libcxx \
-		libcxxabi-${LIBCXXABI_REV}.tar.gz:libcxxabi \
 		zlib-${ZLIB_REV}.tar.gz:zlib
 EXTRACT_ONLY=	${DISTNAME}.tar.gz
 
@@ -61,15 +57,13 @@ USE_GNOME=	glib20
 # new release every minutes
 PORTSCOUT=	ignore
 
-# egrep "build.git|buildtools.git|clang.git|common.git|googletest.git|icu.git|zlib.git|libcxx.git|libcxxabi.git" ${WRKSRC}/DEPS
+# egrep "build.git|buildtools.git|clang.git|common.git|googletest.git|icu.git|zlib.git" ${WRKSRC}/DEPS
 BUILD_REV=	153ad0bf09eda458f1ef4f74dcac5c12d530d770
 BUILDTOOLS_REV=		3ff4f5027b4b81a6c9c36d64d71444f2709a4896
 CLANG_REV=	92b362238013c401926b8a45b0b8f0a42d506120
 COMMON_REV=	23ef5333a357fc7314630ef88b44c3a545881dee
 GOOGLETEST_REV=	4fe018038f87675c083d0cfb6a6b57c274fb1753
 ICU_REV=	79326efe26e5440f530963704c3c0ff965b3a4ac
-LIBCXX_REV=	d9040c75cfea5928c804ab7c235fed06a63f743a
-LIBCXXABI_REV=	196ba1aaa8ac285d94f4ea8d9836390a45360533
 ZLIB_REV=	f8517bd62931d7adb9bcefb0cbe3c2ca5cd8862c
 
 BUILDTYPE=	Release
@@ -109,10 +103,6 @@ do-fetch:
 		https://chromium.googlesource.com/external/github.com/google/googletest.git/+archive/${GOOGLETEST_REV}.tar.gz
 	${FETCH_CMD} -o ${DISTDIR}/icu-${ICU_REV}.tar.gz \
 		https://chromium.googlesource.com/chromium/deps/icu.git/+archive/${ICU_REV}.tar.gz
-	${FETCH_CMD} -o ${DISTDIR}/libcxx-${LIBCXX_REV}.tar.gz \
-		 https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxx.git/+archive/${LIBCXX_REV}.tar.gz
-	${FETCH_CMD} -o ${DISTDIR}/libcxxabi-${LIBCXXABI_REV}.tar.gz \
-		 https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libcxxabi.git/+archive/${LIBCXXABI_REV}.tar.gz
 	${FETCH_CMD} -o ${DISTDIR}/zlib-${ZLIB_REV}.tar.gz \
 		https://chromium.googlesource.com/chromium/src/third_party/zlib.git/+archive/${ZLIB_REV}.tar.gz
 
@@ -120,7 +110,6 @@ do-fetch:
 .  for f in build-${BUILD_REV} buildtools-${BUILDTOOLS_REV} \
 		clang-${CLANG_REV} common-${COMMON_REV} \
 		googletest-${GOOGLETEST_REV} icu-${ICU_REV} \
-		libcxx-${LIBCXX_REV} libcxxabi-${LIBCXXABI_REV} \
 		zlib-${ZLIB_REV}
 	scp ${DISTDIR}/${f}.tar.gz \
 	    mikael@freefall.freebsd.org:public_distfiles/v8
@@ -136,17 +125,13 @@ post-extract:
 		${WRKSRC}/third_party/googletest/src \
 		${WRKSRC}/third_party/icu \
 		${WRKSRC}/third_party/zlib \
-		${WRKSRC}/tools/clang \
-		${WRKSRC}/buildtools/third_party/libc++/trunk \
-		${WRKSRC}/buildtools/third_party/libc++abi/trunk
+		${WRKSRC}/tools/clang
 	${TAR} -xf ${DISTDIR}/build-${BUILD_REV}.tar.gz  -C ${WRKSRC}/build
 	${TAR} -xf ${DISTDIR}/buildtools-${BUILDTOOLS_REV}.tar.gz  -C ${WRKSRC}/buildtools
 	${TAR} -xf ${DISTDIR}/clang-${CLANG_REV}.tar.gz  -C ${WRKSRC}/tools/clang
 	${TAR} -xf ${DISTDIR}/common-${COMMON_REV}.tar.gz  -C ${WRKSRC}/base/trace_event/common
 	${TAR} -xf ${DISTDIR}/googletest-${GOOGLETEST_REV}.tar.gz  -C ${WRKSRC}/third_party/googletest/src
 	${TAR} -xf ${DISTDIR}/icu-${ICU_REV}.tar.gz -C ${WRKSRC}/third_party/icu
-	${TAR} -xf ${DISTDIR}/libcxx-${LIBCXX_REV}.tar.gz -C ${WRKSRC}/buildtools/third_party/libc++/trunk
-	${TAR} -xf ${DISTDIR}/libcxxabi-${LIBCXXABI_REV}.tar.gz -C ${WRKSRC}/buildtools/third_party/libc++abi/trunk
 	${TAR} -xf ${DISTDIR}/zlib-${ZLIB_REV}.tar.gz -C ${WRKSRC}/third_party/zlib
 
 post-patch:
