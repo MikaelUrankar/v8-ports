@@ -7,8 +7,10 @@
 # https://github.com/v8/v8/commit/4dc61d3cd02f0a2462cc655095db1e99ad9047d2
 #  -> Version  8.4.371.23
 
+# see https://aur.archlinux.org/v8.git
+
 PORTNAME=	v8
-DISTVERSION=	8.5.210.20
+DISTVERSION=	8.7.142
 CATEGORIES=	lang
 MASTER_SITES=	LOCAL/mikael/v8/:build \
 		LOCAL/mikael/v8/:buildtools \
@@ -37,9 +39,10 @@ LICENSE=	BSD3CLAUSE
 LICENSE_FILE=	${WRKSRC}/LICENSE
 
 BUILD_DEPENDS=	binutils>0:devel/binutils \
-		gn:devel/chromium-gn \
+		gn:devel/gn \
 		${PYTHON_PKGNAMEPREFIX}Jinja2>0:devel/py-Jinja2@${PY_FLAVOR} \
 		libunwind>0:devel/libunwind
+LIB_DEPENDS=	libicudata.so:devel/icu
 
 .include <bsd.port.options.mk>
 
@@ -50,7 +53,7 @@ BUILD_DEPENDS=	binutils>0:devel/binutils \
 BUILD_DEPENDS+=	llvm10>0:devel/llvm10
 .endif
 
-USES=		pkgconfig ninja python:2.7,build tar:xz
+USES=		pkgconfig ninja python:3.5+,build tar:xz
 USE_GITHUB=	yes
 USE_LDCONFIG=	yes
 USE_GNOME=	glib20
@@ -59,15 +62,15 @@ USE_GNOME=	glib20
 PORTSCOUT=	ignore
 
 # egrep "build.git|buildtools.git|clang.git|common.git|googletest.git|icu.git|zlib.git|libcxx.git|libcxxabi.git" ${WRKSRC}/DEPS
-BUILD_REV=	2dc7c7abc04253e340b60fa339151a92519f93d1
-BUILDTOOLS_REV=		1ed99573d57d4b6041261b531cdf876e631cf0bc
-CLANG_REV=	42b285fe752983290c9c74bafa83b50e3ba09c01
-COMMON_REV=	ef3586804494b7e402b6c1791d5dccdf2971afff
+BUILD_REV=	153ad0bf09eda458f1ef4f74dcac5c12d530d770
+BUILDTOOLS_REV=		3ff4f5027b4b81a6c9c36d64d71444f2709a4896
+CLANG_REV=	92b362238013c401926b8a45b0b8f0a42d506120
+COMMON_REV=	23ef5333a357fc7314630ef88b44c3a545881dee
 GOOGLETEST_REV=	4fe018038f87675c083d0cfb6a6b57c274fb1753
 ICU_REV=	79326efe26e5440f530963704c3c0ff965b3a4ac
 LIBCXX_REV=	d9040c75cfea5928c804ab7c235fed06a63f743a
 LIBCXXABI_REV=	196ba1aaa8ac285d94f4ea8d9836390a45360533
-ZLIB_REV=	02daed1bb93a34cf89d68913f88708228e12a0ab
+ZLIB_REV=	f8517bd62931d7adb9bcefb0cbe3c2ca5cd8862c
 
 BUILDTYPE=	Release
 
@@ -82,6 +85,8 @@ GN_ARGS+=	clang_use_chrome_plugins=false \
 		treat_warnings_as_errors=false \
 		use_aura=true \
 		use_lld=true \
+		use_custom_libcxx=false \
+		v8_use_external_startup_data=false \
 		extra_cxxflags="${CXXFLAGS}" \
 		extra_ldflags="${LDFLAGS}"
 
@@ -155,6 +160,23 @@ post-patch:
 	@${PATCH} -d ${PATCH_WRKSRC} ${PATCH_ARGS} < ${FILESDIR}/extrapatch-clang10
 .endif
 
+# google sucks, this file is needed but absent in the build* archive
+# https://github.com/klzgrad/naiveproxy/blob/master/src/build/config/gclient_args.gni
+	${TOUCH} ${WRKSRC}/build/config/gclient_args.gni
+	${ECHO} "checkout_google_benchmark = false" >> ${WRKSRC}/build/config/gclient_args.gni
+
+pre-configure:
+	# use system libraries for ICU
+	cd ${WRKSRC} && ${SETENV} ${CONFIGURE_ENV} ${PYTHON_CMD} \
+		./build/linux/unbundle/replace_gn_files.py --system-libraries \
+		icu || ${FALSE}
+	# google build system is too stupid to create needed directory and
+	# use system headers for ICU
+	${MKDIR} ${WRKSRC}/out/${BUILDTYPE}/gen/shim_headers/icuuc_shim/third_party/icu/source/common/unicode \
+		 ${WRKSRC}/out/${BUILDTYPE}/gen/shim_headers/icui18n_shim/third_party/icu/source/i18n/unicode \
+		 ${WRKSRC}/out/${BUILDTYPE}/gen/include
+	${CP} -R ${LOCALBASE}/include/unicode ${WRKSRC}/out/${BUILDTYPE}/gen/include
+
 do-configure:
 	cd ${WRKSRC} && ${SETENV} ${CONFIGURE_ENV} gn gen out/${BUILDTYPE} --args='${GN_ARGS}'
 
@@ -166,6 +188,7 @@ do-install:
 	${INSTALL_LIB} ${WRKSRC}/out/${BUILDTYPE}/libv8.so ${STAGEDIR}${PREFIX}/lib/libv8.so
 	${INSTALL_LIB} ${WRKSRC}/out/${BUILDTYPE}/libv8_libbase.so ${STAGEDIR}${PREFIX}/lib/libv8_libbase.so
 	${INSTALL_LIB} ${WRKSRC}/out/${BUILDTYPE}/libv8_libplatform.so ${STAGEDIR}${PREFIX}/lib/libv8_libplatform.so
+	${INSTALL_LIB} ${WRKSRC}/out/${BUILDTYPE}/libchrome_zlib.so ${STAGEDIR}${PREFIX}/lib/libchrome_zlib.so
 
 	${INSTALL_DATA} ${WRKSRC}/include/*.h ${STAGEDIR}${PREFIX}/include/
 	${MKDIR} ${STAGEDIR}${PREFIX}/include/libplatform \

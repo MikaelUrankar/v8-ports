@@ -1,15 +1,15 @@
---- BUILD.gn.orig	2020-05-13 18:41:59 UTC
+--- BUILD.gn.orig	2020-09-18 23:49:09 UTC
 +++ BUILD.gn
-@@ -3742,7 +3742,7 @@ v8_component("v8_libbase") {
+@@ -4069,7 +4069,7 @@ v8_component("v8_libbase") {
      }
    }
  
--  if (is_linux) {
-+  if (is_linux && !is_bsd) {
+-  if (is_linux || is_chromeos) {
++  if ((is_linux || is_chromeos) && !is_bsd) {
      sources += [
        "src/base/debug/stack_trace_posix.cc",
        "src/base/platform/platform-linux.cc",
-@@ -3762,6 +3762,12 @@ v8_component("v8_libbase") {
+@@ -4089,6 +4089,12 @@ v8_component("v8_libbase") {
        "dl",
        "rt",
      ]
@@ -22,11 +22,11 @@
    } else if (is_android) {
      if (current_toolchain == host_toolchain) {
        libs = [
-@@ -4064,6 +4070,7 @@ if (current_toolchain == v8_snapshot_toolchain) {
-       "src/snapshot/mksnapshot.cc",
-       "src/snapshot/snapshot-empty.cc",
+@@ -4431,6 +4437,7 @@ if (v8_monolithic) {
+       ":v8_libsampler",
+       "//build/win:default_exe_manifest",
      ]
 +    libs = ["execinfo"]
  
      configs = [ ":internal_config" ]
- 
+   }
