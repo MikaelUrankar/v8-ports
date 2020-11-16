@@ -1,4 +1,4 @@
---- build/config/BUILDCONFIG.gn.orig	2019-06-04 18:55:15 UTC
+--- build/config/BUILDCONFIG.gn.orig	2020-11-16 14:30:51 UTC
 +++ build/config/BUILDCONFIG.gn
 @@ -131,10 +131,10 @@ declare_args() {
    is_official_build = false
@@ -37,12 +37,12 @@
  is_chromeos = current_os == "chromeos"
  is_fuchsia = current_os == "fuchsia"
  is_ios = current_os == "ios"
--is_linux = current_os == "chromeos" || current_os == "linux"
-+is_linux = current_os == "chromeos" || current_os == "linux" || current_os == "freebsd"
+-is_linux = current_os == "linux"
++is_linux = current_os == "linux" || current_os == "freebsd"
  is_mac = current_os == "mac"
  is_nacl = current_os == "nacl"
  is_win = current_os == "win" || current_os == "winuwp"
 +is_bsd = current_os == "freebsd"
  
+ is_apple = is_ios || is_mac
  is_posix = !is_win && !is_fuchsia
- 

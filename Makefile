@@ -1,16 +1,26 @@
 # $FreeBSD: head/lang/v8/Makefile 507372 2019-07-26 20:46:53Z gerald $
 
+# To update the port:
+# The stable v8 version follows the chromium browser
 # https://chromereleases.googleblog.com/search/label/Desktop%20Update
 # search for "The stable channel has been updated to" XX.X.XXXX.XXX
-#  -> https://github.com/chromium/chromium/blob/85.0.4183.102/DEPS
-#     -> 'v8_revision': '4dc61d3cd02f0a2462cc655095db1e99ad9047d2'
-# https://github.com/v8/v8/commit/4dc61d3cd02f0a2462cc655095db1e99ad9047d2
-#  -> Version  8.4.371.23
+#  -> https://github.com/chromium/chromium/blob/87.0.4280.60/DEPS
+#     -> 'v8_revision': 'd2fef9fb0ac356d6cf6759f29e2b56ebea8bc58d'
+# https://github.com/v8/v8/commit/d2fef9fb0ac356d6cf6759f29e2b56ebea8bc58d
+#  -> Version  8.7.220.23
+# then:
+#  - make makesum
+#  - update the various hashes (BUILD_HASH...), see below:
+#    egrep "build.git|buildtools.git|clang.git|common.git|googletest.git|icu.git|zlib.git" ${WRKSRC}/DEPS
+#  - make MAINTAINER_MODE=yes fetch (warning, it'll try to upload them on my account on freefall)
+#  - make makesum (to update the various deps hashes)
+#  - make clean ; make (and fix the patches if needed)
+
 
 # see https://aur.archlinux.org/v8.git
 
 PORTNAME=	v8
-DISTVERSION=	8.7.142
+DISTVERSION=	8.7.220.23
 CATEGORIES=	lang
 MASTER_SITES=	LOCAL/mikael/v8/:build \
 		LOCAL/mikael/v8/:buildtools \
@@ -19,16 +29,16 @@ MASTER_SITES=	LOCAL/mikael/v8/:build \
 		LOCAL/mikael/v8/:googletest \
 		LOCAL/mikael/v8/:icu \
 		LOCAL/mikael/v8/:zlib
-DISTFILES=	build-${BUILD_REV}.tar.gz:build \
-		buildtools-${BUILDTOOLS_REV}.tar.gz:buildtools \
-		clang-${CLANG_REV}.tar.gz:clang \
-		common-${COMMON_REV}.tar.gz:common \
-		googletest-${GOOGLETEST_REV}.tar.gz:googletest \
-		icu-${ICU_REV}.tar.gz:icu \
-		zlib-${ZLIB_REV}.tar.gz:zlib
+DISTFILES=	build-${BUILD_HASH}.tar.gz:build \
+		buildtools-${BUILDTOOLS_HASH}.tar.gz:buildtools \
+		clang-${CLANG_HASH}.tar.gz:clang \
+		common-${COMMON_HASH}.tar.gz:common \
+		googletest-${GOOGLETEST_HASH}.tar.gz:googletest \
+		icu-${ICU_HASH}.tar.gz:icu \
+		zlib-${ZLIB_HASH}.tar.gz:zlib
 EXTRACT_ONLY=	${DISTNAME}.tar.gz
 
-MAINTAINER=	sunpoet@FreeBSD.org
+MAINTAINER=	mikael@FreeBSD.org
 COMMENT=	Open source JavaScript engine by Google
 
 LICENSE=	BSD3CLAUSE
@@ -56,13 +66,13 @@ USE_GNOME=	glib20
 PORTSCOUT=	ignore
 
 # egrep "build.git|buildtools.git|clang.git|common.git|googletest.git|icu.git|zlib.git" ${WRKSRC}/DEPS
-BUILD_REV=	153ad0bf09eda458f1ef4f74dcac5c12d530d770
-BUILDTOOLS_REV=		3ff4f5027b4b81a6c9c36d64d71444f2709a4896
-CLANG_REV=	92b362238013c401926b8a45b0b8f0a42d506120
-COMMON_REV=	23ef5333a357fc7314630ef88b44c3a545881dee
-GOOGLETEST_REV=	4fe018038f87675c083d0cfb6a6b57c274fb1753
-ICU_REV=	79326efe26e5440f530963704c3c0ff965b3a4ac
-ZLIB_REV=	f8517bd62931d7adb9bcefb0cbe3c2ca5cd8862c
+BUILD_HASH=	38a49c12ded01dd8c4628b432cb7eebfb29e77f1
+BUILDTOOLS_HASH=		3ff4f5027b4b81a6c9c36d64d71444f2709a4896
+CLANG_HASH=	3017edade60658a699be776d9e282509a902ffe9
+COMMON_HASH=	23ef5333a357fc7314630ef88b44c3a545881dee
+GOOGLETEST_HASH=	4fe018038f87675c083d0cfb6a6b57c274fb1753
+ICU_HASH=	aef20f06d47ba76fdf13abcdb033e2a408b5a94d
+ZLIB_HASH=	4668feaaa47973a6f9d9f9caeb14cd03731854f1
 
 BUILDTYPE=	Release
 
@@ -89,31 +99,31 @@ MAKE_ARGS=	-C out/${BUILDTYPE}
 # To download distfiles : as sunpoet: make MAINTAINER_MODE=yes fetch
 .if defined(MAINTAINER_MODE)
 do-fetch:
-	${FETCH_CMD} -o ${DISTDIR}/build-${BUILD_REV}.tar.gz \
-		https://chromium.googlesource.com/chromium/src/build.git/+archive/${BUILD_REV}.tar.gz
-	${FETCH_CMD} -o ${DISTDIR}/buildtools-${BUILDTOOLS_REV}.tar.gz \
-		https://chromium.googlesource.com/chromium/src/buildtools.git/+archive/${BUILDTOOLS_REV}.tar.gz
-	${FETCH_CMD} -o ${DISTDIR}/clang-${CLANG_REV}.tar.gz \
-		https://chromium.googlesource.com/chromium/src/tools/clang.git/+archive/${CLANG_REV}.tar.gz
-	${FETCH_CMD} -o ${DISTDIR}/common-${COMMON_REV}.tar.gz \
-		https://chromium.googlesource.com/chromium/src/base/trace_event/common.git/+archive/${COMMON_REV}.tar.gz
-	${FETCH_CMD} -o ${DISTDIR}/googletest-${GOOGLETEST_REV}.tar.gz \
-		https://chromium.googlesource.com/external/github.com/google/googletest.git/+archive/${GOOGLETEST_REV}.tar.gz
-	${FETCH_CMD} -o ${DISTDIR}/icu-${ICU_REV}.tar.gz \
-		https://chromium.googlesource.com/chromium/deps/icu.git/+archive/${ICU_REV}.tar.gz
-	${FETCH_CMD} -o ${DISTDIR}/zlib-${ZLIB_REV}.tar.gz \
-		https://chromium.googlesource.com/chromium/src/third_party/zlib.git/+archive/${ZLIB_REV}.tar.gz
+	${FETCH_CMD} -o ${DISTDIR}/build-${BUILD_HASH}.tar.gz \
+		https://chromium.googlesource.com/chromium/src/build.git/+archive/${BUILD_HASH}.tar.gz
+	${FETCH_CMD} -o ${DISTDIR}/buildtools-${BUILDTOOLS_HASH}.tar.gz \
+		https://chromium.googlesource.com/chromium/src/buildtools.git/+archive/${BUILDTOOLS_HASH}.tar.gz
+	${FETCH_CMD} -o ${DISTDIR}/clang-${CLANG_HASH}.tar.gz \
+		https://chromium.googlesource.com/chromium/src/tools/clang.git/+archive/${CLANG_HASH}.tar.gz
+	${FETCH_CMD} -o ${DISTDIR}/common-${COMMON_HASH}.tar.gz \
+		https://chromium.googlesource.com/chromium/src/base/trace_event/common.git/+archive/${COMMON_HASH}.tar.gz
+	${FETCH_CMD} -o ${DISTDIR}/googletest-${GOOGLETEST_HASH}.tar.gz \
+		https://chromium.googlesource.com/external/github.com/google/googletest.git/+archive/${GOOGLETEST_HASH}.tar.gz
+	${FETCH_CMD} -o ${DISTDIR}/icu-${ICU_HASH}.tar.gz \
+		https://chromium.googlesource.com/chromium/deps/icu.git/+archive/${ICU_HASH}.tar.gz
+	${FETCH_CMD} -o ${DISTDIR}/zlib-${ZLIB_HASH}.tar.gz \
+		https://chromium.googlesource.com/chromium/src/third_party/zlib.git/+archive/${ZLIB_HASH}.tar.gz
 
-. if ${USER} == ${MAINTAINER:C/@.*//}
-.  for f in build-${BUILD_REV} buildtools-${BUILDTOOLS_REV} \
-		clang-${CLANG_REV} common-${COMMON_REV} \
-		googletest-${GOOGLETEST_REV} icu-${ICU_REV} \
-		zlib-${ZLIB_REV}
+#. if ${USER} == ${MAINTAINER:C/@.*//}
+.  for f in build-${BUILD_HASH} buildtools-${BUILDTOOLS_HASH} \
+		clang-${CLANG_HASH} common-${COMMON_HASH} \
+		googletest-${GOOGLETEST_HASH} icu-${ICU_HASH} \
+		zlib-${ZLIB_HASH}
 	scp ${DISTDIR}/${f}.tar.gz \
 	    mikael@freefall.freebsd.org:public_distfiles/v8
 .  endfor
 . endif
-.endif # defined(MAINTAINER_MODE)
+#.endif # defined(MAINTAINER_MODE)
 
 post-extract:
 	${MKDIR} \
@@ -124,13 +134,13 @@ post-extract:
 		${WRKSRC}/third_party/icu \
 		${WRKSRC}/third_party/zlib \
 		${WRKSRC}/tools/clang
-	${TAR} -xf ${DISTDIR}/build-${BUILD_REV}.tar.gz  -C ${WRKSRC}/build
-	${TAR} -xf ${DISTDIR}/buildtools-${BUILDTOOLS_REV}.tar.gz  -C ${WRKSRC}/buildtools
-	${TAR} -xf ${DISTDIR}/clang-${CLANG_REV}.tar.gz  -C ${WRKSRC}/tools/clang
-	${TAR} -xf ${DISTDIR}/common-${COMMON_REV}.tar.gz  -C ${WRKSRC}/base/trace_event/common
-	${TAR} -xf ${DISTDIR}/googletest-${GOOGLETEST_REV}.tar.gz  -C ${WRKSRC}/third_party/googletest/src
-	${TAR} -xf ${DISTDIR}/icu-${ICU_REV}.tar.gz -C ${WRKSRC}/third_party/icu
-	${TAR} -xf ${DISTDIR}/zlib-${ZLIB_REV}.tar.gz -C ${WRKSRC}/third_party/zlib
+	${TAR} -xf ${DISTDIR}/build-${BUILD_HASH}.tar.gz  -C ${WRKSRC}/build
+	${TAR} -xf ${DISTDIR}/buildtools-${BUILDTOOLS_HASH}.tar.gz  -C ${WRKSRC}/buildtools
+	${TAR} -xf ${DISTDIR}/clang-${CLANG_HASH}.tar.gz  -C ${WRKSRC}/tools/clang
+	${TAR} -xf ${DISTDIR}/common-${COMMON_HASH}.tar.gz  -C ${WRKSRC}/base/trace_event/common
+	${TAR} -xf ${DISTDIR}/googletest-${GOOGLETEST_HASH}.tar.gz  -C ${WRKSRC}/third_party/googletest/src
+	${TAR} -xf ${DISTDIR}/icu-${ICU_HASH}.tar.gz -C ${WRKSRC}/third_party/icu
+	${TAR} -xf ${DISTDIR}/zlib-${ZLIB_HASH}.tar.gz -C ${WRKSRC}/third_party/zlib
 
 post-patch:
 	${REINPLACE_CMD} "s|%%LOCALBASE%%|${LOCALBASE}|" \
