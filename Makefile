@@ -42,10 +42,8 @@ LIB_DEPENDS=	libicudata.so:devel/icu
 
 .include <bsd.port.options.mk>
 
-# clang10+ is required, this conditional can be dropped when
-# 11.3 and 12.1 are EOL
-.if (${OSVERSION} >= 1100000 && ${OSVERSION} < 1103511) || \
-    (${OSVERSION} >= 1200000 && ${OSVERSION} < 1201515)
+# clang10+ is required, this conditionnal can be dropped when 12.1 is EOL
+.if ${OSVERSION} >= 1200000 && ${OSVERSION} < 1201515
 BUILD_DEPENDS+=	llvm10>0:devel/llvm10
 .endif
 
@@ -138,10 +136,8 @@ post-patch:
 	${REINPLACE_CMD} "s|%%LOCALBASE%%|${LOCALBASE}|" \
 		${WRKSRC}/build/toolchain/gcc_toolchain.gni
 		${WRKSRC}/buildtools/third_party/libc++/BUILD.gn
-# clang10+ is required, this conditionnal can be dropped when
-# 11.3 and 12.1 are EOL
-.if (${OSVERSION} >= 1100000 && ${OSVERSION} < 1103511) || \
-    (${OSVERSION} >= 1200000 && ${OSVERSION} < 1201515)
+# clang10+ is required, this conditionnal can be dropped when 12.1 is EOL
+.if ${OSVERSION} >= 1200000 && ${OSVERSION} < 1201515
 	@${PATCH} -d ${PATCH_WRKSRC} ${PATCH_ARGS} < ${FILESDIR}/extrapatch-clang10
 .endif
 
