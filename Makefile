@@ -16,9 +16,6 @@
 #  - make makesum (to update the various deps hashes)
 #  - make clean ; make (and fix the patches if needed)
 
-
-# see https://aur.archlinux.org/v8.git
-
 PORTNAME=	v8
 DISTVERSION=	8.7.220.23
 CATEGORIES=	lang
@@ -38,7 +35,7 @@ DISTFILES=	build-${BUILD_HASH}.tar.gz:build \
 		zlib-${ZLIB_HASH}.tar.gz:zlib
 EXTRACT_ONLY=	${DISTNAME}.tar.gz
 
-MAINTAINER=	mikael@FreeBSD.org
+MAINTAINER=	sunpoet@FreeBSD.org
 COMMENT=	Open source JavaScript engine by Google
 
 LICENSE=	BSD3CLAUSE
@@ -114,16 +111,16 @@ do-fetch:
 	${FETCH_CMD} -o ${DISTDIR}/zlib-${ZLIB_HASH}.tar.gz \
 		https://chromium.googlesource.com/chromium/src/third_party/zlib.git/+archive/${ZLIB_HASH}.tar.gz
 
-#. if ${USER} == ${MAINTAINER:C/@.*//}
+. if ${USER} == ${MAINTAINER:C/@.*//}
 .  for f in build-${BUILD_HASH} buildtools-${BUILDTOOLS_HASH} \
 		clang-${CLANG_HASH} common-${COMMON_HASH} \
 		googletest-${GOOGLETEST_HASH} icu-${ICU_HASH} \
 		zlib-${ZLIB_HASH}
 	scp ${DISTDIR}/${f}.tar.gz \
-	    mikael@freefall.freebsd.org:public_distfiles/v8
+	    sunpoet@freefall.freebsd.org:public_distfiles/v8
 .  endfor
 . endif
-#.endif # defined(MAINTAINER_MODE)
+.endif # defined(MAINTAINER_MODE)
 
 post-extract:
 	${MKDIR} \
